@@ -5,15 +5,20 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.glureau.minimaldagger.R
+import com.glureau.minimaldagger.di.injector
 import com.glureau.minimaldagger.features.ClickCounterService
+import javax.inject.Inject
 
 class CounterFragment : Fragment(R.layout.fragment_counter) {
-    // Injected by the Activity
-    // BAD: nullable service because the activity is in charge of injecting it when the fragment is attached.
-    // This means in some lifecycle states like onCreate the service will be null
-    var clickCounterService: ClickCounterService? = null
+    @Inject
+    lateinit var clickCounterService: ClickCounterService
 
     private var clickListener: ClickCounterService.ClickCountListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injector.inject(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -24,12 +29,12 @@ class CounterFragment : Fragment(R.layout.fragment_counter) {
                 view.findViewById<TextView>(R.id.counter_textview).text = "$clickCount clicks"
             }
         }
-        clickCounterService!!.addListener(clickListener!!)
+        clickCounterService.addListener(clickListener!!)
     }
 
     override fun onDestroyView() {
         // Forgot to remove this listener and you leak the CounterFragment view!
-        clickCounterService!!.removeListener(clickListener!!)
+        clickCounterService.removeListener(clickListener!!)
         super.onDestroyView()
     }
 }

@@ -1,6 +1,10 @@
 package com.glureau.minimaldagger.features
 
-class ClickCounterService {
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class ClickCounterService @Inject constructor() {
 
     private var clickCounter = 0
 
